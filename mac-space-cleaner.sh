@@ -70,9 +70,7 @@ run_rm() {
 empty_trash() {
   if [ "$DRY_RUN" -eq 0 ]; then
     log_action "Emptying Trash via System Events"
-    # Tenta via AppleScript (método oficial e mais potente)
     osascript -e 'tell application "Finder" to empty trash' 2>/dev/null || true
-    # Força via comando caso o AppleScript falhe
     rm -rf "$HOME/.Trash/"* 2>/dev/null || true
   else
     log_warn "(dry-run) Would empty trash"
