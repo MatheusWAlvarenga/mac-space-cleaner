@@ -120,7 +120,7 @@ Please follow standard GitHub contribution workflows and include documentation f
 
 ## License
 
-This project is released under the MIT License. You can find the full license text in the [**LICENSE**](https://www.mwbrtecnologia.com.br) file.
+This project is released under the MIT License. You can find the full license text in the [**LICENSE**](https://matheuswalvarenga.github.io/mac-space-cleaner) file.
 
 Short summary:
 
