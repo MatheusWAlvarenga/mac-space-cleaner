@@ -16,6 +16,17 @@ YELLOW='\033[0;33m'
 ORANGE='\033[0;38;5;208m'
 NC='\033[0m' # No Color
 
+# Script directory (used to find bundled assets)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+print_banner() {
+  if [ -f "$SCRIPT_DIR/assets/logo.txt" ]; then
+    printf "${GREEN}\n"
+    sed 's/^/ /' "$SCRIPT_DIR/assets/logo.txt"
+    printf "${NC}\n"
+  fi
+}
+
 log_info()    { printf "\n${BLUE}💡 %s${NC}\n" "$1"; }
 log_success() { printf "${GREEN}✅ %s${NC}\n" "$1"; }
 log_warn()    { printf "${YELLOW}⚠️  %s${NC}\n" "$1"; }
@@ -92,6 +103,9 @@ show_details() {
 # INITIAL STATE
 # =============================
 SPACE_BEFORE=$(disk_free)
+
+# show ASCII banner
+print_banner
 
 # =============================
 # MODE SELECTION
