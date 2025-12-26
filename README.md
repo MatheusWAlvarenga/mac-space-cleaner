@@ -16,22 +16,20 @@ This tool is intended for developers who see large, unexplained "System Data" or
 
 Key capabilities:
 
-- Interactive terminal menu
-- Two cleanup modes: `light` (safe/basic) and `deep` (aggressive)
-- Per-item confirmation and disk-space estimation before removal
 - `--dry-run` simulation mode (no files are removed)
 - Final report showing reclaimed space and optional reboot prompt
 
----
+## License
 
-## Features
+This project is released under the MIT License. The full license text is available in `LICENSE.html`.
 
-- Interactive menu-driven UI
-- Light and Deep cleanup modes
-- Estimates space to be freed before deleting
-- Prompts for emptying Trash and removing each `node_modules` (shows size)
-- Final summary with total freed space
-- Optional reboot to refresh macOS system data
+Short summary:
+
+- **Permissions:** commercial use, modification, distribution, private use.
+- **Conditions:** include the copyright and license notice in all copies.
+- **Limitations:** no warranty; authors are not liable for damages.
+
+If you'd like a different license (GPL, Apache 2.0, etc.), open an issue or submit a PR.
 
 ---
 
@@ -122,7 +120,7 @@ Please follow standard GitHub contribution workflows and include documentation f
 
 ## License
 
-This project is released under the MIT License. You can find the full license text in the `LICENSE` file.
+This project is released under the MIT License. You can find the full license text in the [**LICENSE**](https://www.mwbrtecnologia.com.br) file.
 
 Short summary:
 
