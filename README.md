@@ -1,12 +1,8 @@
-# mac-space-cleaner
+# MAC SPACE CLEANER
 
-```
-++--------------------------------------------------------------++
-||                                                              ||
-||                   MAC SPACE CLEANER                          ||
-||                                                              ||
-++--------------------------------------------------------------++
-```
+<p align="center">
+	<img src="https://github.com/user-attachments/assets/a5a8c7fa-4f80-4f13-8d11-d9c6bf0a1f5b" alt="Screenshot 2025-12-26 at 18 58 23" width="492" height="107" style="border-radius:12px;" />
+</p>
 
 A small, interactive shell script to safely reclaim disk space on macOS by cleaning caches and other unnecessary developer artifacts.
 
@@ -56,8 +52,6 @@ git clone https://github.com/MatheusWAlvarenga/mac-space-cleaner.git
 cd mac-space-cleaner
 chmod +x mac_space_cleaner.sh
 ```
-
-Note: Replace `YOUR_USERNAME` with your GitHub username if using the repo URL above.
 
 ---
 
@@ -128,4 +122,12 @@ Please follow standard GitHub contribution workflows and include documentation f
 
 ## License
 
-MIT License
+This project is released under the MIT License. You can find the full license text in the `LICENSE` file.
+
+Short summary:
+
+- **Permissions:** commercial use, modification, distribution, private use.
+- **Conditions:** include the copyright and license notice in all copies.
+- **Limitations:** no warranty, authors not liable for damages.
+
+If you'd like a different license (GPL, Apache 2.0, etc.), open an issue or submit a PR.
