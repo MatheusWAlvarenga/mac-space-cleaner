@@ -1,9 +1,5 @@
 # <h1 align="center">MAC SPACE CLEANER</h1>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/a5a8c7fa-4f80-4f13-8d11-d9c6bf0a1f5b" alt="Screenshot 2025-12-26 at 18 58 23" width="492" height="107" style="border-radius:12px;" />
-</p>
-
 A small, interactive shell script to safely reclaim disk space on macOS by cleaning caches and other unnecessary developer artifacts.
 
 This tool is intended for developers who see large, unexplained "System Data" or otherwise need a reliable way to remove developer-related disk bloat.
