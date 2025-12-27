@@ -92,7 +92,8 @@ show_details() {
   printf "   - Dev Tools: Gradle, NPM, Cocoapods\n"
   printf "   - Homebrew: Old versions & downloads\n"
   printf "   - Docker: Prune system & volumes\n"
-  printf "   - Trash: Empty system trash folder\n"
+  printf "   - Trash: Optionally empty system trash folder\n"
+  printf "   - Downloads: Optionally clear ~/Downloads\n"
   printf "   - RAM: Purge inactive memory\n"
   printf "${BLUE}%s${NC}\n\n" "------------------------------------------"
 }
