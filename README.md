@@ -22,18 +22,6 @@ Key capabilities:
 - `--dry-run` simulation mode (no files are removed)
 - Final report showing reclaimed space and optional reboot prompt
 
-## License
-
-This project is released under the MIT License. The full license text is available in `LICENSE.html`.
-
-Short summary:
-
-- **Permissions:** commercial use, modification, distribution, private use.
-- **Conditions:** include the copyright and license notice in all copies.
-- **Limitations:** no warranty; authors are not liable for damages.
-
-If you'd like a different license (GPL, Apache 2.0, etc.), open an issue or submit a PR.
-
 ---
 
 ## Requirements
