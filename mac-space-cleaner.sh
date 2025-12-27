@@ -85,6 +85,7 @@ show_details() {
   printf "   - User Caches (~/Library/Caches)\n"
   printf "   - System Logs (~/Library/Logs)\n"
   printf "   - Telegram/Spotify temporary caches\n\n"
+  printf "   - Downloads: Optionally clear ~/Downloads\n\n"
   
   printf "${ORANGE}2) DEEP CLEANUP (Includes Light +):${NC}\n"
   printf "   - Xcode: DerivedData, Archives, iOS Support\n"
@@ -161,6 +162,20 @@ if [ "$MODE" = "DEEP" ]; then
 
   if prompt_yes_no "Empty Trash?"; then
     empty_trash
+  fi
+
+  if [ -d "$HOME/Downloads" ]; then
+    COUNT=$(find "$HOME/Downloads" -mindepth 1 -maxdepth 1 -print0 2>/dev/null | awk 'BEGIN{RS="\0";c=0} {if(length($0)>0) c++} END{print c}')
+    if [ "$COUNT" -eq 0 ]; then
+      log_warn "No files found in $HOME/Downloads"
+    else
+      if prompt_yes_no "Delete all files in your Downloads folder ($HOME/Downloads)?"; then
+        log_action "Removing contents of Downloads"
+        run_rm "$HOME/Downloads/*"
+      fi
+    fi
+  else
+    log_warn "$HOME/Downloads does not exist."
   fi
 
   if [ "$DRY_RUN" -eq 0 ]; then
