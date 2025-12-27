@@ -92,7 +92,6 @@ show_details() {
   printf "   - Homebrew: Old versions & downloads\n"
   printf "   - Docker: Prune system & volumes\n"
   printf "   - Trash: Empty system trash folder\n"
-  printf "   - Node: Interactive scan for node_modules\n"
   printf "   - RAM: Purge inactive memory\n"
   printf "${BLUE}%s${NC}\n\n" "------------------------------------------"
 }
@@ -111,7 +110,7 @@ print_banner
 while true; do
   log_info "Select cleaning mode:"
   printf "${GREEN}1) Light${NC}: Basic caches and logs\n"
-  printf "${ORANGE}2) Deep${NC}: Dev tools (Xcode, Docker, Brew, Node)\n"
+  printf "${ORANGE}2) Deep${NC}: Dev tools (Xcode, Docker, Brew)\n"
   echo "3) Details: View process breakdown"
   echo "4) Cancel"
   read -r -p "Option [1-4]: " opt
@@ -162,21 +161,6 @@ if [ "$MODE" = "DEEP" ]; then
 
   if prompt_yes_no "Empty Trash?"; then
     empty_trash
-  fi
-
-  if prompt_yes_no "Search for large node_modules in current directory?"; then
-    log_info "Scanning for node_modules (>100MB)..."
-    while IFS= read -r nm; do
-      SIZE_KB=$(du -sk "$nm" 2>/dev/null | awk '{print $1}') || continue
-      SIZE_HUMAN=$(du -sh "$nm" 2>/dev/null | awk '{print $1}') || continue
-      PROJECT=$(basename "$(dirname "$nm")")
-      
-      if [ "$SIZE_KB" -gt 102400 ]; then 
-        if prompt_yes_no "Remove node_modules from '$PROJECT' ($SIZE_HUMAN)?"; then
-          run_rm "$nm"
-        fi
-      fi
-    done < <(find . -name "node_modules" -type d -prune 2>/dev/null)
   fi
 
   if [ "$DRY_RUN" -eq 0 ]; then

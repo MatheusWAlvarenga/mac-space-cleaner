@@ -1,4 +1,11 @@
-# <h1 align="center">MAC SPACE CLEANER</h1>
+```
+        _  __    _     ____      ____  ____    _    ____ _____      ____ _      _____    _    _   _ _____ ____
+       |  \/  |  / \   / ___|    / ___||  _ \  / \  / ___| ____|    /____| |    |____|   / \  | \ | | ____|  _ \
+       | |\/| | / _ \ | |       \___ \| |_) |/ _ \| |    |  _|     | |   | |    |  _|   / _ \ |  \| |  _| | |_) |
+       | |  | |/ ___ \| |___     ___) |  __// ___ \ |___ | |___    | |___| |___ | |___ / ___ \| |\  | |___|  _ <
+       |_|  |_/_/   \_\_____|   |____/|_|  /_/   \_\____||_____|    \____|_____|_____/_/   \_\_| \_|_____|_| \_\
+
+```
 
 A small, interactive shell script to safely reclaim disk space on macOS by cleaning caches and other unnecessary developer artifacts.
 
@@ -8,7 +15,7 @@ This tool is intended for developers who see large, unexplained "System Data" or
 
 ## Overview
 
-`mac-space-cleaner` helps you safely analyze and remove files that commonly consume space on developer machines, including caches, build artifacts, and old `node_modules` folders. The script is interactive, shows size estimates before deleting, and supports a dry-run mode so you can preview changes.
+`mac-space-cleaner` helps you safely analyze and remove files that commonly consume space on developer machines, including caches and build artifacts. The script is interactive, shows size estimates before deleting, and supports a dry-run mode so you can preview changes.
 
 Key capabilities:
 
