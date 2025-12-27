@@ -61,13 +61,13 @@ chmod +x mac_space_cleaner.sh
 Run the script (recommended to try `--dry-run` first):
 
 ```bash
-./mac_space_cleaner.sh --dry-run
+./mac-space-cleaner.sh --dry-run
 ```
 
 To perform the actual cleanup, run without `--dry-run`:
 
 ```bash
-./mac_space_cleaner.sh
+./mac-space-cleaner.sh
 ```
 
 The script will present an interactive menu and show estimated sizes before any deletion.
