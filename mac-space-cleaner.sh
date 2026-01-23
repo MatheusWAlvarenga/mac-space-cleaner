@@ -91,11 +91,164 @@ show_details() {
   printf "   - Xcode: DerivedData, Archives, iOS Support\n"
   printf "   - Dev Tools: Gradle, NPM, Cocoapods\n"
   printf "   - Homebrew: Old versions & downloads\n"
-  printf "   - Docker: Prune system & volumes\n"
   printf "   - Trash: Optionally empty system trash folder\n"
   printf "   - Downloads: Optionally clear ~/Downloads\n"
   printf "   - RAM: Purge inactive memory\n"
   printf "${BLUE}%s${NC}\n\n" "------------------------------------------"
+}
+
+# ---- EXTRA CLEANERS ----
+clean_docker() {
+  if ! command -v docker &>/dev/null; then
+    log_warn "Docker not installed or not in PATH; skipping Docker cleanup"
+    return
+  fi
+
+  log_action "Checking Docker state"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_warn "(dry-run) Would list containers, images, volumes and perform pruning"
+    docker ps -a --format "table {{.ID}}\t{{.Image}}\t{{.Status}}" 2>/dev/null || true
+    docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" 2>/dev/null || true
+    return
+  fi
+
+  if prompt_yes_no "Stop all running Docker containers?"; then
+    docker ps -q | xargs -r docker stop || true
+  fi
+
+  if prompt_yes_no "Remove all stopped containers and dangling images (docker system prune)?"; then
+    docker system prune -af || true
+  fi
+
+  if prompt_yes_no "Remove unused volumes?"; then
+    docker volume prune -f || true
+  fi
+}
+
+clean_photos() {
+  # remove known Photos caches in user container paths (safe targets)
+  log_action "Cleaning Photos caches (container caches and thumbnails)"
+  run_rm "$HOME/Library/Containers/com.apple.Photos/Data/Library/Caches/*"
+  run_rm "$HOME/Library/Containers/com.apple.ImageKit.References/Data/Library/Caches/*"
+  run_rm "$HOME/Library/Caches/com.apple.Photos/*"
+  if prompt_yes_no "Remove Photos app previews inside your Photos Library (may force regenerate)?"; then
+    run_rm "$HOME/Pictures/Photos Library.photoslibrary/resources/previews/*"
+  fi
+}
+
+clean_python_node() {
+  log_action "Cleaning Python and Node caches"
+
+  # pip cache
+  if command -v pip &>/dev/null || command -v pip3 &>/dev/null; then
+    if command -v pip &>/dev/null && pip cache purge &>/dev/null; then
+      if [ "$DRY_RUN" -eq 0 ]; then
+        pip cache purge || true
+      else
+        log_warn "(dry-run) Would run 'pip cache purge'"
+      fi
+    else
+      run_rm "$HOME/.cache/pip/*"
+      run_rm "$HOME/.pip/cache/*"
+    fi
+  else
+    log_warn "pip not found; skipping pip cleanup"
+  fi
+
+  # npm / yarn
+  if command -v npm &>/dev/null; then
+    if [ "$DRY_RUN" -eq 0 ]; then
+      npm cache clean --force &>/dev/null || run_rm "$HOME/.npm/_cacache"
+    else
+      log_warn "(dry-run) Would run 'npm cache clean --force' or remove ~/.npm/_cacache"
+    fi
+  fi
+
+  if command -v yarn &>/dev/null; then
+    if [ "$DRY_RUN" -eq 0 ]; then
+      yarn cache clean --all &>/dev/null || true
+    else
+      log_warn "(dry-run) Would run 'yarn cache clean --all'"
+    fi
+  fi
+
+  if prompt_yes_no "Search and remove common __pycache__ and .pytest_cache directories under your home (dangerous)?"; then
+    if [ "$DRY_RUN" -eq 0 ]; then
+      find "$HOME" -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -prune -exec rm -rf {} + 2>/dev/null || true
+    else
+      log_warn "(dry-run) Would find and remove __pycache__ and .pytest_cache under $HOME"
+    fi
+  fi
+}
+
+clean_system_extra() {
+  log_action "Cleaning additional system caches and local snapshots"
+
+  # Private var folders (safe to clear cache subpaths)
+  if prompt_yes_no "Clear /private/var/folders/* caches (requires sudo)?"; then
+    if [ "$DRY_RUN" -eq 0 ]; then
+      sudo rm -rf /private/var/folders/*/C/com.apple.Safari/* 2>/dev/null || true
+      sudo rm -rf /private/var/folders/*/0/com.apple.Safari/* 2>/dev/null || true
+      sudo rm -rf /private/var/folders/*/*/C/* 2>/dev/null || true
+    else
+      log_warn "(dry-run) Would remove selective caches under /private/var/folders"
+    fi
+  fi
+
+  # System caches (requires sudo)
+  if prompt_yes_no "Clear system caches in /Library/Caches (requires sudo)?"; then
+    if [ "$DRY_RUN" -eq 0 ]; then
+      sudo rm -rf /Library/Caches/* 2>/dev/null || true
+    else
+      log_warn "(dry-run) Would remove /Library/Caches/*"
+    fi
+  fi
+
+  # Time Machine local snapshots
+  if command -v tmutil &>/dev/null; then
+    if prompt_yes_no "Remove local Time Machine snapshots? (requires sudo)"; then
+      if [ "$DRY_RUN" -eq 0 ]; then
+        SNAPSHOTS=$(tmutil listlocalsnapshots / 2>/dev/null | awk -F. '{print $1}' )
+        for s in $SNAPSHOTS; do
+          sudo tmutil deletelocalsnapshots "$s" || true
+        done
+      else
+        log_warn "(dry-run) Would list and delete local Time Machine snapshots via tmutil"
+      fi
+    fi
+  fi
+}
+
+clean_project_dirs() {
+  log_action "Scanning projects for node_modules and common build artifacts"
+
+  read -r -p "Base directory to scan (default: $HOME): " BASE_DIR
+  BASE_DIR=${BASE_DIR:-$HOME}
+
+  if [ ! -d "$BASE_DIR" ]; then
+    log_warn "$BASE_DIR does not exist; aborting project scan"
+    return
+  fi
+
+  # find common project artifact directories
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_warn "(dry-run) Would search for node_modules, __pycache__, .venv, .pytest_cache, dist, build under $BASE_DIR"
+  fi
+
+  find "$BASE_DIR" -type d \( -name "node_modules" -o -name "__pycache__" -o -name ".venv" -o -name ".pytest_cache" -o -name "dist" -o -name "build" \) -prune 2>/dev/null |
+  while IFS= read -r dir; do
+    # show relative path for readability
+    rel=${dir/#$HOME/~}
+    size=$(du -sh "$dir" 2>/dev/null | awk '{print $1}')
+    printf "\nFound: %s (%s)\n" "$rel" "$size"
+    if prompt_yes_no "Delete this folder?"; then
+      run_rm "$dir"
+    else
+      log_info "Skipped $rel"
+    fi
+  done
+
+  log_info "Project scan finished"
 }
 
 # =============================
@@ -156,11 +309,6 @@ if [ "$MODE" = "DEEP" ]; then
     fi
   fi
 
-  if command -v docker &>/dev/null && prompt_yes_no "Cleanup unused Docker system data?"; then
-    log_action "Pruning Docker"
-    docker system prune -f
-  fi
-
   if prompt_yes_no "Empty Trash?"; then
     empty_trash
   fi
@@ -182,6 +330,27 @@ if [ "$MODE" = "DEEP" ]; then
   if [ "$DRY_RUN" -eq 0 ]; then
     log_action "Purging inactive RAM"
     sudo purge || log_warn "Sudo privileges required for RAM purge"
+  fi
+
+  # Additional deep-clean steps
+  if prompt_yes_no "Include Docker cleanup (stop/prune)?"; then
+    clean_docker
+  fi
+
+  if prompt_yes_no "Include Photos cache cleanup (container caches)?"; then
+    clean_photos
+  fi
+
+  if prompt_yes_no "Include Python/Node caches (pip/npm/yarn)?"; then
+    clean_python_node
+  fi
+
+  if prompt_yes_no "Include additional system cleanup (caches, local snapshots)?"; then
+    clean_system_extra
+  fi
+
+  if prompt_yes_no "Scan projects for node_modules and other build artifacts?"; then
+    clean_project_dirs
   fi
 fi
 
